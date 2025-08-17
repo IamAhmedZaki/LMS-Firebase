@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase";
+import { addDoc, collection } from 'firebase/firestore';
+
 
 
 const Signup = () => {
@@ -15,15 +17,27 @@ const Signup = () => {
 
     const [loading, setLoading] = useState(false)
 
+    const saveData=async()=>{
+        try {
+            const data=await addDoc(collection(db, "users"),credentials)
+            console.log('user added');
+            
+        } catch (error) {
+            console.log('user was not added',error);
+            
+        }
+    }
 
 
-
-    const submitHandle = (e) => {
+    const submitHandle = async(e) => {
         e.preventDefault()
         setLoading(true)
+        await saveData()
         createUserWithEmailAndPassword(auth, credentials.email, credentials.password)
             .then((userCredential) => {
                 setLoading(false)
+                
+                navigate('/dashboard')
                 const user = userCredential.user;
 
                 console.log(user);
@@ -31,6 +45,8 @@ const Signup = () => {
 
             })
             .catch((error) => {
+                    setLoading(false)
+
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 console.log(errorCode, errorMessage);

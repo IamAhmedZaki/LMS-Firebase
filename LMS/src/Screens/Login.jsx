@@ -25,15 +25,18 @@ signInWithEmailAndPassword(auth, credentials.email, credentials.password)
   .then((userCredential) => {
     // Signed in 
     setLoading(false)
-
+    navigate('/dashboard')
     const user = userCredential.user;
     console.log(user, 'logged in');
     
     // ...
   })
   .catch((error) => {
+        setLoading(false)
+
     const errorCode = error.code;
     const errorMessage = error.message;
+    console.log(errorCode, errorMessage);
   });      
   }
 
